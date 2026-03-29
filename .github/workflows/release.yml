@@ -20,7 +20,7 @@ jobs:
         branch: [MAIN, LTS]
 
     container:
-      image: archlinux:latest
+      image: index.docker.io/library/archlinux@sha256:8435d30c1462f94345c3894ebbeaeecd658fcb284aa41b0bcc5f88728933447f # ratchet:archlinux:latest
 
     steps:
       - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
             cpio zstd lz4 git wget
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # ratchet:actions/checkout@v4
 
       - name: Fetch kernel source
         run: ./kernel/fetch.sh ${{ matrix.branch }}
@@ -59,7 +59,7 @@ jobs:
           find . -name "*.pkg.tar.zst" -exec cp {} dist/ \;
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # ratchet:actions/upload-artifact@v4
         with:
           name: xanmod-${{ matrix.branch }}-arch-pkg
           path: dist/*.pkg.tar.zst
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # ratchet:actions/download-artifact@v4
         with:
           path: dist/
 
@@ -81,7 +81,7 @@ jobs:
           cat dist/SHA256SUMS
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # ratchet:softprops/action-gh-release@v2
         with:
           files: |
             dist/**/*.deb
