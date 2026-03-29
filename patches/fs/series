@@ -1,0 +1,11 @@
+# fs/series — filesystem patches
+# Source: arglebargle-arch/xanmod-rog-PKGBUILD
+#
+# Enable individual patches via PATCHES_FS="patch1.patch patch2.patch"
+# or enable all with ENABLE_FS_PATCHES=1
+#
+# Patches to port/verify:
+#   - btrfs-fix-autodefrag.patch         (btrfs autodefrag regression fix, 5.16.9)
+#   - fs-allow-cross-vfsmount-reflink-dedupe.patch
+#
+# Add filenames below once rebased against 6.x:

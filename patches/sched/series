@@ -1,0 +1,13 @@
+# sched/series — CPU scheduler patches
+# Source: zakuradev/kernel-configuration (CachyOS/cacule scheduler)
+#
+# NOTE: The cacule scheduler was removed from XanMod upstream. Applying it
+# conflicts with XanMod's own scheduler changes. Use with caution and test
+# thoroughly. The BORE and EEVDF schedulers in recent kernels may be preferable.
+#
+# Enable with: ENABLE_CACHY=1
+#
+# Patches to evaluate:
+#   - cachy-scheduler.patch      (cacule + idle balance, from hamadmarri/cacule-cpu-scheduler)
+#
+# Add filenames below once compatibility with 6.x is confirmed:

@@ -1,0 +1,213 @@
+---
+# GitLab CI — mirrors the GitHub Actions pipeline
+# Mirrors xanmod/linux upstream CI conventions (gitlab.com/xanmod/linux/.gitlab-ci.yml)
+#
+# Stages:
+#   fetch   → clone/update kernel source
+#   patch   → apply patch sets
+#   build   → compile kernel, produce packages
+#   release → upload artifacts to GitLab Release (tag pipelines only)
+
+stages:
+  - fetch
+  - patch
+  - build
+  - release
+
+variables:
+  GIT_STRATEGY: fetch
+  GIT_DEPTH: "1"
+  KERNEL_SRC: "$CI_PROJECT_DIR/kernel/src"
+
+# ── Reusable anchors ──────────────────────────────────────────────────────────
+.debian-deps: &debian-deps
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends
+        build-essential bc bison flex libssl-dev libelf-dev
+        libncurses-dev dwarves pahole cpio zstd lz4 git wget curl
+
+.x86-build: &x86-build
+  image: debian:bookworm
+  <<: *debian-deps
+  artifacts:
+    paths:
+      - "*.deb"
+    expire_in: 7 days
+
+# ── Fetch stage ───────────────────────────────────────────────────────────────
+fetch:MAIN:
+  stage: fetch
+  image: debian:bookworm
+  <<: *debian-deps
+  script:
+    - BRANCH=MAIN ./kernel/fetch.sh MAIN
+  cache:
+    key: "kernel-src-MAIN"
+    paths: [kernel/src/]
+
+fetch:LTS:
+  stage: fetch
+  image: debian:bookworm
+  <<: *debian-deps
+  script:
+    - BRANCH=LTS ./kernel/fetch.sh LTS
+  cache:
+    key: "kernel-src-LTS"
+    paths: [kernel/src/]
+
+fetch:RT:
+  stage: fetch
+  image: debian:bookworm
+  <<: *debian-deps
+  script:
+    - BRANCH=RT ./kernel/fetch.sh RT
+  cache:
+    key: "kernel-src-RT"
+    paths: [kernel/src/]
+
+# ── Build stage ───────────────────────────────────────────────────────────────
+build:MAIN:x86-64-v3:
+  stage: build
+  <<: *x86-build
+  needs: [fetch:MAIN]
+  cache:
+    key: "kernel-src-MAIN"
+    paths: [kernel/src/]
+    policy: pull
+  script:
+    - |
+      ENABLE_ROG=0 ENABLE_MEDIATEK_BT=0 ENABLE_FS_PATCHES=0 \
+      ENABLE_NET_PATCHES=0 ENABLE_CACHY=0 ENABLE_PARALLEL_BOOT=0 \
+      ./scripts/apply-patches.sh kernel/src patches
+    - |
+      cd kernel/src
+      bash ./scripts/kconfig/merge_config.sh -m .config \
+        ../../configs/base/x86-64-v3.config \
+        ../../configs/features/performance.config \
+        ../../configs/features/no-debug.config
+      make -j$(nproc) ARCH=x86 olddefconfig
+      make -j$(nproc) ARCH=x86 bindeb-pkg
+    - find . -maxdepth 2 -name "*.deb" -exec cp {} . \;
+
+build:MAIN:x86-64-v2:
+  stage: build
+  <<: *x86-build
+  needs: [fetch:MAIN]
+  cache:
+    key: "kernel-src-MAIN"
+    paths: [kernel/src/]
+    policy: pull
+  script:
+    - |
+      ENABLE_ROG=0 ENABLE_MEDIATEK_BT=0 ENABLE_FS_PATCHES=0 \
+      ENABLE_NET_PATCHES=0 ENABLE_CACHY=0 ENABLE_PARALLEL_BOOT=0 \
+      ./scripts/apply-patches.sh kernel/src patches
+    - |
+      cd kernel/src
+      bash ./scripts/kconfig/merge_config.sh -m .config \
+        ../../configs/base/x86-64-v2.config \
+        ../../configs/features/performance.config \
+        ../../configs/features/no-debug.config
+      make -j$(nproc) ARCH=x86 olddefconfig
+      make -j$(nproc) ARCH=x86 bindeb-pkg
+    - find . -maxdepth 2 -name "*.deb" -exec cp {} . \;
+
+build:LTS:x86-64-v3:
+  stage: build
+  <<: *x86-build
+  needs: [fetch:LTS]
+  cache:
+    key: "kernel-src-LTS"
+    paths: [kernel/src/]
+    policy: pull
+  script:
+    - |
+      ENABLE_ROG=0 ENABLE_MEDIATEK_BT=0 ENABLE_FS_PATCHES=0 \
+      ENABLE_NET_PATCHES=0 ENABLE_CACHY=0 ENABLE_PARALLEL_BOOT=0 \
+      ./scripts/apply-patches.sh kernel/src patches
+    - |
+      cd kernel/src
+      bash ./scripts/kconfig/merge_config.sh -m .config \
+        ../../configs/base/x86-64-v3.config \
+        ../../configs/features/performance.config \
+        ../../configs/features/no-debug.config
+      make -j$(nproc) ARCH=x86 olddefconfig
+      make -j$(nproc) ARCH=x86 bindeb-pkg
+    - find . -maxdepth 2 -name "*.deb" -exec cp {} . \;
+
+build:RT:x86-64-v3:
+  stage: build
+  <<: *x86-build
+  needs: [fetch:RT]
+  cache:
+    key: "kernel-src-RT"
+    paths: [kernel/src/]
+    policy: pull
+  script:
+    - |
+      ENABLE_ROG=0 ENABLE_MEDIATEK_BT=0 ENABLE_FS_PATCHES=0 \
+      ENABLE_NET_PATCHES=0 ENABLE_CACHY=0 ENABLE_PARALLEL_BOOT=0 \
+      ./scripts/apply-patches.sh kernel/src patches
+    - |
+      cd kernel/src
+      bash ./scripts/kconfig/merge_config.sh -m .config \
+        ../../configs/base/x86-64-v3.config \
+        ../../configs/features/performance.config \
+        ../../configs/features/rt.config \
+        ../../configs/features/no-debug.config
+      make -j$(nproc) ARCH=x86 olddefconfig
+      make -j$(nproc) ARCH=x86 bindeb-pkg
+    - find . -maxdepth 2 -name "*.deb" -exec cp {} . \;
+
+build:MAIN:arm64:
+  stage: build
+  image: debian:bookworm
+  <<: *debian-deps
+  needs: [fetch:MAIN]
+  cache:
+    key: "kernel-src-MAIN"
+    paths: [kernel/src/]
+    policy: pull
+  tags:
+    - arm64   # requires a GitLab runner with arm64 tag; remove if using QEMU
+  allow_failure: true   # ARM64 configs are experimental
+  script:
+    - |
+      ENABLE_ROG=0 ENABLE_MEDIATEK_BT=0 ENABLE_FS_PATCHES=0 \
+      ENABLE_NET_PATCHES=0 ENABLE_CACHY=0 ENABLE_PARALLEL_BOOT=0 \
+      ./scripts/apply-patches.sh kernel/src patches
+    - |
+      cd kernel/src
+      bash ./scripts/kconfig/merge_config.sh -m .config \
+        ../../configs/base/aarch64.config \
+        ../../configs/features/performance.config \
+        ../../configs/features/no-debug.config
+      make -j$(nproc) ARCH=arm64 olddefconfig
+      make -j$(nproc) ARCH=arm64 bindeb-pkg
+    - find . -maxdepth 2 -name "*.deb" -exec cp {} . \;
+  artifacts:
+    paths: ["*.deb"]
+    expire_in: 7 days
+
+# ── Release stage (tag pipelines only) ────────────────────────────────────────
+release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - build:MAIN:x86-64-v3
+    - build:MAIN:x86-64-v2
+    - build:LTS:x86-64-v3
+    - build:RT:x86-64-v3
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
+  script:
+    - sha256sum *.deb > SHA256SUMS
+    - echo "Creating release $CI_COMMIT_TAG"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: 'XanMod Unified Kernel $CI_COMMIT_TAG'
+    assets:
+      links:
+        - name: 'SHA256SUMS'
+          url: '$CI_PROJECT_URL/-/jobs/artifacts/$CI_COMMIT_TAG/raw/SHA256SUMS?job=release'

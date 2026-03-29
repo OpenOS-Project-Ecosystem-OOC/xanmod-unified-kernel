@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# packaging/debian/install.sh — Debian/Ubuntu kernel install
+#
+# Two modes:
+#   1. Pre-built: install from deb.xanmod.org APT repo (fast, x86-64 only)
+#   2. Source-built: package the compiled tree as a .deb and install it
+#
+# Mode is selected automatically:
+#   - If KERNEL_SRC contains a compiled tree → source-built (.deb)
+#   - If called with --apt flag → APT repo mode
+#
+# Environment:
+#   KERNEL_SRC        path to compiled kernel source tree
+#   KARCH             kernel architecture
+#   XANMOD_VARIANT    apt variant: "" | -edge | -lts | -rt-edge | -rt
+#                     (only used in APT mode)
+
+set -euo pipefail
+
+KERNEL_SRC="${KERNEL_SRC:?KERNEL_SRC not set}"
+KARCH="${KARCH:?KARCH not set}"
+APT_MODE="${1:-}"
+
+# ── APT mode (pre-built, x86-64 Debian/Ubuntu only) ──────────────────────────
+if [[ "${APT_MODE}" == "--apt" ]]; then
+  if [[ "${KARCH}" != "x86" ]]; then
+    echo "ERROR: APT pre-built packages are only available for x86-64." >&2
+    exit 1
+  fi
+
+  VARIANT="${XANMOD_VARIANT:-}"
+  PACKAGE="linux-xanmod${VARIANT}"
+
+  echo "==> Installing ${PACKAGE} from deb.xanmod.org"
+
+  # Add repo and key if not already present
+  if [[ ! -f /etc/apt/sources.list.d/xanmod-kernel.list ]]; then
+    echo 'deb http://deb.xanmod.org releases main' \
+      | tee /etc/apt/sources.list.d/xanmod-kernel.list
+    wget -qO - https://dl.xanmod.org/gpg.key \
+      | gpg --dearmor \
+      | tee /etc/apt/trusted.gpg.d/xanmod-kernel.gpg > /dev/null
+    apt-get update -qq
+  fi
+
+  apt-get install -y --no-install-recommends "${PACKAGE}"
+  echo "==> APT install complete. Reboot to use the new kernel."
+  exit 0
+fi
+
+# ── Source-built mode: produce .deb packages ──────────────────────────────────
+cd "${KERNEL_SRC}"
+KERNEL_VERSION="$(make -s kernelrelease)"
+echo "==> Packaging kernel ${KERNEL_VERSION} as .deb"
+
+# bindeb-pkg produces linux-image, linux-headers, linux-libc-dev debs
+make -j"$(nproc)" ARCH="${KARCH}" bindeb-pkg
+
+# Debs land one directory above the source tree
+DEB_DIR="$(dirname "${KERNEL_SRC}")"
+echo "==> Installing generated .deb packages from ${DEB_DIR}"
+dpkg -i "${DEB_DIR}"/linux-image-*.deb "${DEB_DIR}"/linux-headers-*.deb 2>/dev/null || true
+apt-get install -f -y   # fix any dependency issues
+
+echo "==> Debian install complete. Reboot to use kernel ${KERNEL_VERSION}."

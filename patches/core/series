@@ -1,0 +1,10 @@
+# core/series — patches applied to every build
+#
+# These patches are arch-neutral and apply regardless of distro, hardware,
+# or feature flags. Keep this list minimal; prefer feature-flagged patch sets
+# for anything optional.
+#
+# Format: one filename per line, applied in order via `patch -p1`.
+# Lines starting with # are ignored.
+
+# (empty — add core patches here as the project matures)

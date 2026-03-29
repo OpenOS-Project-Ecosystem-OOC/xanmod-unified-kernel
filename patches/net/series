@@ -1,0 +1,11 @@
+# net/series — network patches
+# Source: arglebargle-arch/xanmod-rog-PKGBUILD
+#
+# Enable with: ENABLE_NET_PATCHES=1
+#
+# Patches to port/verify:
+#   - udp-ipv6-optimisations-v2-net-next.patch
+#   - af_unix-Replace-unix_table_lock-with-per-hash-locks.patch
+#   - cfg80211-dont-WARN-if-a-self-managed-device.patch
+#
+# Add filenames below once rebased against 6.x:
