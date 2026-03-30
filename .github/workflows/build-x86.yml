@@ -49,7 +49,20 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential bc bison flex libssl-dev libelf-dev \
             libncurses-dev dwarves pahole cpio zstd lz4 git wget curl
+      - name: Compute cache key
+        run: echo "YEAR_WEEK=$(date -u '+%Y-W%V')" >> "$GITHUB_ENV"
+      - name: Restore kernel source cache
+        id: cache-kernel
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # ratchet:actions/cache@v4
+        with:
+          path: kernel/src
+          # Keyed on branch + year-week so the cache refreshes weekly
+          # to pick up new upstream commits.
+          key: xanmod-kernel-${{ matrix.branch }}-${{ env.YEAR_WEEK }}
+          restore-keys: |
+            xanmod-kernel-${{ matrix.branch }}-
       - name: Fetch XanMod kernel source
+        if: steps.cache-kernel.outputs.cache-hit != 'true'
         run: ./kernel/fetch.sh ${{ matrix.branch }}
       - name: Apply patches
         run: |
