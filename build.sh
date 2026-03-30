@@ -97,6 +97,18 @@ detect_arch() {
     x86_64)          echo "x86" ;;
     aarch64|arm64)   echo "arm64" ;;
     riscv64)         echo "riscv" ;;
+    i386|i486|i586|i686)
+      # i386/i686 is not supported. XanMod and its upstream patch set target
+      # 64-bit kernels only. The last Linux kernel with native i386 support
+      # was 3.7.10 (2013); XanMod 6.x requires x86-64.
+      # If you need a modern kernel on 32-bit x86 hardware, consider:
+      #   - gray386linux (kernel 3.7.10 + musl): https://github.com/marmolak/gray386linux
+      #   - Debian i386 with a stock kernel (no XanMod patches)
+      echo "ERROR: i386/i686 is not supported by XanMod." >&2
+      echo "       XanMod 6.x requires a 64-bit (x86-64) CPU." >&2
+      echo "       The last Linux kernel with native i386 support was 3.7.10 (2013)." >&2
+      exit 1
+      ;;
     *)
       echo "ERROR: Unsupported host architecture: ${machine}" >&2
       echo "       Cross-compilation: set KARCH and CROSS_COMPILE manually." >&2
