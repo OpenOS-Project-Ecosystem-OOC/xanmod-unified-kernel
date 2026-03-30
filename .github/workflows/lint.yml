@@ -9,6 +9,7 @@ on:
 jobs:
   shellcheck:
     name: Shell syntax & shellcheck
+    if: github.repository == 'Interested-Deving-1896/xanmod-unified-kernel'
     runs-on: ubuntu-latest
     steps:
       - uses: jfrog-fastci/fastci@2c2686537a7647c727d20c955b26bb7ce6dea6d4 # ratchet:jfrog-fastci/fastci@v0
@@ -42,6 +43,7 @@ jobs:
 
   patch-series:
     name: Patch series integrity
+    if: github.repository == 'Interested-Deving-1896/xanmod-unified-kernel'
     runs-on: ubuntu-latest
     steps:
       - uses: jfrog-fastci/fastci@2c2686537a7647c727d20c955b26bb7ce6dea6d4 # ratchet:jfrog-fastci/fastci@v0
@@ -69,6 +71,7 @@ jobs:
 
   config-fragments:
     name: Config fragment syntax
+    if: github.repository == 'Interested-Deving-1896/xanmod-unified-kernel'
     runs-on: ubuntu-latest
     steps:
       - uses: jfrog-fastci/fastci@2c2686537a7647c727d20c955b26bb7ce6dea6d4 # ratchet:jfrog-fastci/fastci@v0
@@ -96,6 +99,7 @@ jobs:
 
   profiles:
     name: Profile validation
+    if: github.repository == 'Interested-Deving-1896/xanmod-unified-kernel'
     runs-on: ubuntu-latest
     steps:
       - uses: jfrog-fastci/fastci@2c2686537a7647c727d20c955b26bb7ce6dea6d4 # ratchet:jfrog-fastci/fastci@v0
@@ -116,6 +120,7 @@ jobs:
 
   upstream-status:
     name: Patch upstream-status annotations
+    if: github.repository == 'Interested-Deving-1896/xanmod-unified-kernel'
     runs-on: ubuntu-latest
     steps:
       - uses: jfrog-fastci/fastci@2c2686537a7647c727d20c955b26bb7ce6dea6d4 # ratchet:jfrog-fastci/fastci@v0
