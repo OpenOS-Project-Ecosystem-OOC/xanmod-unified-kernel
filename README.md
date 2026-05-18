@@ -4,13 +4,43 @@
 [![Built with Ona](https://ona.com/build-with-ona.svg)](https://app.ona.com/#https://github.com/Interested-Deving-1896/xanmod-unified-kernel)
 
 <!-- AI:start:what-it-does -->
-_Description pending._
+This project provides a build system for the XanMod Linux kernel that is both distribution-agnostic and architecture-agnostic. It simplifies the process of building and packaging the XanMod kernel for various Linux distributions and hardware architectures, making it useful for developers, system integrators, and advanced users who require a custom kernel.
 <!-- AI:end:what-it-does -->
 
 ## Architecture
 
 <!-- AI:start:architecture -->
-_Architecture documentation pending._
+The project consists of a distro-agnostic and architecture-agnostic build system for the XanMod Linux kernel. It uses shell scripts and configuration files to automate kernel compilation and packaging. The key components include:
+
+- **Build Scripts**: Located in the `build.sh` file, these scripts handle the kernel build process for different architectures.
+- **Configurations**: The `configs` directory contains kernel configuration files tailored for various use cases.
+- **Patches**: The `patches` directory includes custom patches applied during the build process.
+- **Profiles**: The `profiles` directory defines build profiles for specific distributions or environments.
+- **CI Workflows**: GitHub Actions workflows in `.github/workflows` automate builds, linting, and artifact mirroring.
+- **Documentation**: The `docs` directory provides usage instructions and contribution guidelines.
+- **Gentoo Overlay**: The `gentoo-overlay` directory contains files for integrating the kernel with Gentoo systems.
+
+Directory structure:
+```plaintext
+.
+├── .devcontainer
+├── .github
+│   └── workflows
+├── .gitignore
+├── .gitlab-ci.yml
+├── CONTRIBUTING.md
+├── README.md
+├── build.sh
+├── configs
+├── docs
+├── fastci.config.json
+├── gentoo-overlay
+├── kernel
+├── packaging
+├── patches
+├── profiles
+└── scripts
+```
 <!-- AI:end:architecture -->
 
 ## Install
@@ -33,7 +63,13 @@ cd xanmod-unified-kernel
 ## CI
 
 <!-- AI:start:ci -->
-_CI documentation pending._
+- **build-arm64.yml**: Builds the XanMod kernel for ARM64 architecture. No secrets required.  
+- **build-selfhosted.yml**: Builds the kernel on self-hosted runners for custom environments. No secrets required.  
+- **build-x86.yml**: Builds the XanMod kernel for x86 architecture. No secrets required.  
+- **labeler.yml**: Automatically applies labels to pull requests based on file changes. No secrets required.  
+- **lint.yml**: Lints shell scripts and configuration files for style and syntax issues. No secrets required.  
+- **release.yml**: Creates and publishes kernel release artifacts to GitHub Releases. Requires `GITHUB_TOKEN` (provided by default) and optional `RELEASE_GPG_KEY` for signing.  
+- **trigger-artifact-mirror.yml**: Triggers an external artifact mirroring system. Requires `MIRROR_API_TOKEN`.  
 <!-- AI:end:ci -->
 
 ## Mirror chain
@@ -53,7 +89,9 @@ Direct commits to OSP or OOC are detected and opened as PRs back to `Interested-
 ## Contributors
 
 <!-- AI:start:contributors -->
-_Contributors pending._
+[@Interested-Deving-1896](https://github.com/Interested-Deving-1896): 32 commits
+
+*Note: This repository is a mirror. Please refer to the upstream source for additional contributions and updates.*
 <!-- AI:end:contributors -->
 
 ## Origins
