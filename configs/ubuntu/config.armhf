@@ -1,0 +1,30 @@
+# Ubuntu armhf-specific config fragments
+# Extends configs/ubuntu/config.base + configs/arch/config.armhf
+
+
+CONFIG_ARM=y
+CONFIG_ARCH_MULTI_V7=y
+CONFIG_THUMB2_KERNEL=y
+
+# Hard-float ABI
+CONFIG_VFP=y
+CONFIG_VFPv3=y
+CONFIG_NEON=y
+CONFIG_KERNEL_MODE_NEON=y
+
+# LPAE (Large Physical Address Extension — up to 1TB RAM on 32-bit)
+CONFIG_ARM_LPAE=y
+CONFIG_HIGHMEM=y
+
+# Common SoC support
+CONFIG_ARCH_BCM2835=y
+CONFIG_ARCH_SUNXI=y
+CONFIG_ARCH_ROCKCHIP=y
+CONFIG_ARCH_OMAP2PLUS=y
+CONFIG_ARCH_MXC=y
+
+# Virtualisation
+CONFIG_KVM=m
+
+# No 64-bit atomics on 32-bit ARM
+CONFIG_64BIT=n

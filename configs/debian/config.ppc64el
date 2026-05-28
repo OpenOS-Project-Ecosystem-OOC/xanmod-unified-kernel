@@ -1,0 +1,25 @@
+# Debian ppc64el-specific config fragments
+# Extends configs/debian/config.base + configs/arch/config.ppc64el
+
+
+CONFIG_PPC64=y
+CONFIG_CPU_LITTLE_ENDIAN=y
+CONFIG_PPC_BOOK3S_64=y
+
+# POWER ISA features
+CONFIG_ALTIVEC=y
+CONFIG_VSX=y
+CONFIG_HTM=y
+
+# IBM POWER platform support
+CONFIG_PPC_PSERIES=y
+CONFIG_PPC_POWERNV=y
+CONFIG_PPC_OF_BOOT_TRAMPOLINE=y
+
+# Virtualisation (POWER Hypervisor)
+CONFIG_KVM=m
+CONFIG_KVM_BOOK3S_64=m
+CONFIG_KVM_BOOK3S_HV_POSSIBLE=y
+
+# IOMMU
+CONFIG_SPAPR_TCE_IOMMU=y

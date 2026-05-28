@@ -1,0 +1,29 @@
+# Ubuntu riscv64-specific config fragments
+# Extends configs/ubuntu/config.base + configs/arch/config.riscv64
+
+
+CONFIG_RISCV=y
+CONFIG_64BIT=y
+CONFIG_RISCV_ISA_C=y
+CONFIG_RISCV_ISA_A=y
+CONFIG_RISCV_ISA_F=y
+CONFIG_RISCV_ISA_D=y
+CONFIG_RISCV_ISA_V=y
+
+# SBI (Supervisor Binary Interface)
+CONFIG_RISCV_SBI=y
+CONFIG_RISCV_SBI_V01=y
+
+# Common RISC-V board support
+CONFIG_SOC_SIFIVE=y
+CONFIG_SOC_STARFIVE=y
+CONFIG_SOC_CANAAN=y
+
+# Virtualisation
+CONFIG_KVM=m
+CONFIG_KVM_RISCV_HOST=m
+
+# ACPI / UEFI (newer boards)
+CONFIG_ACPI=y
+CONFIG_EFI=y
+CONFIG_EFI_STUB=y

@@ -1,0 +1,26 @@
+# Devuan i386-specific config fragments
+# Extends configs/devuan/config.base + configs/arch/config.i386
+
+
+CONFIG_X86_32=y
+CONFIG_64BIT=n
+
+# PAE for >4GB RAM support
+CONFIG_X86_PAE=y
+CONFIG_HIGHMEM64G=y
+CONFIG_HIGHMEM4G=n
+
+# CPU baseline — i686 minimum
+CONFIG_M686=y
+CONFIG_X86_MINIMUM_CPU_FAMILY=6
+
+# No 64-bit KVM on 32-bit host
+CONFIG_KVM=n
+
+# Legacy hardware support
+CONFIG_ISA=n
+CONFIG_EISA=n
+CONFIG_MCA=n
+
+# IOMMU
+CONFIG_INTEL_IOMMU=y

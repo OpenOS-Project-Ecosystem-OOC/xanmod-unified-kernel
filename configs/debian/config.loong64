@@ -1,0 +1,27 @@
+# Debian loong64-specific config fragments
+# Extends configs/debian/config.base + configs/arch/config.loong64
+
+
+CONFIG_LOONGARCH=y
+CONFIG_64BIT=y
+
+# LoongArch CPU features
+CONFIG_CPU_LOONGSON64=y
+CONFIG_LOONGARCH_ISA_LASX=y
+CONFIG_LOONGARCH_ISA_LSX=y
+
+# Loongson platform support
+CONFIG_MACH_LOONGSON64=y
+
+# Virtualisation
+CONFIG_KVM=m
+CONFIG_KVM_LOONGARCH_HOST=m
+
+# ACPI / UEFI (standard on LoongArch)
+CONFIG_ACPI=y
+CONFIG_EFI=y
+CONFIG_EFI_STUB=y
+
+# PCIe
+CONFIG_PCI=y
+CONFIG_PCIE_DW=y

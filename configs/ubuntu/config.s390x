@@ -1,0 +1,27 @@
+# Ubuntu s390x-specific config fragments
+# Extends configs/ubuntu/config.base + configs/arch/config.s390x
+
+
+CONFIG_S390=y
+CONFIG_64BIT=y
+CONFIG_SMP=y
+
+# z/Architecture features
+CONFIG_HAVE_MARCH_Z10_FEATURES=y
+CONFIG_HAVE_MARCH_Z196_FEATURES=y
+CONFIG_HAVE_MARCH_ZEC12_FEATURES=y
+CONFIG_HAVE_MARCH_Z13_FEATURES=y
+CONFIG_HAVE_MARCH_Z14_FEATURES=y
+CONFIG_HAVE_MARCH_Z15_FEATURES=y
+
+# Virtualisation (z/VM, KVM on Z)
+CONFIG_KVM=m
+CONFIG_KVM_S390=m
+
+# Channel I/O
+CONFIG_CCW=y
+CONFIG_VIRTIO_CCW=y
+
+# No legacy x86 subsystems
+CONFIG_PCI=y
+CONFIG_HOTPLUG_PCI=y
