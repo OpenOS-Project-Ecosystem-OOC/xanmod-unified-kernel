@@ -65,6 +65,27 @@ apply-patches: ## Apply XanMod patches to source tree
 bootstrap: ## Install build dependencies
 	@bash scripts/bootstrap.sh
 
+# ── btrfs-dwarfs-framework integration ───────────────────────────────────────
+BDFS_DIR ?= $(shell \
+    if [ -d "$(CURDIR)/../../btrfs-dwarfs-framework" ]; then \
+        echo "$(CURDIR)/../../btrfs-dwarfs-framework"; \
+    elif [ -d "$(CURDIR)/../btrfs-dwarfs-framework" ]; then \
+        echo "$(CURDIR)/../btrfs-dwarfs-framework"; \
+    else echo ""; fi)
+
+.PHONY: bdfs-profile
+bdfs-profile: ## Build XanMod with btrfs_dwarfs module (secondary bdfs kernel)
+	@[ -n "$(BDFS_DIR)" ] || { echo "Set BDFS_DIR=/path/to/btrfs-dwarfs-framework"; exit 1; }
+	bash $(BDFS_DIR)/kernels/bdfs-kconfig/install-into-kernel.sh $(BUILD_DIR)
+	$(MAKE) EXTRA_CONFIG=integrations/bdfs/Kconfig.fragment
+
+.PHONY: bdfs-module-only
+bdfs-module-only: ## Build only btrfs_dwarfs.ko against existing source (fast)
+	@[ -n "$(BDFS_DIR)" ] || { echo "Set BDFS_DIR=/path/to/btrfs-dwarfs-framework"; exit 1; }
+	bash $(BDFS_DIR)/kernels/bdfs-kconfig/install-into-kernel.sh $(BUILD_DIR)
+	$(MAKE) -C $(BUILD_DIR) M=fs/btrfs_dwarfs modules -j$(JOBS)
+	@echo "Module: $(BUILD_DIR)/fs/btrfs_dwarfs/btrfs_dwarfs.ko"
+
 .PHONY: clean
 clean: ## Remove build artifacts (keeps .cache)
 	@rm -rf $(BUILD_DIR) $(OUTPUT_DIR) $(PATCHES_DIR)
